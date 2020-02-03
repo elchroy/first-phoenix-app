@@ -3,8 +3,8 @@ defmodule HelloWeb.UserControllerTest do
 
   alias Hello.Users
 
-  @create_attrs %{bio: "some bio", email: "some email", name: "some name", num_of_pets: 42}
-  @update_attrs %{bio: "some updated bio", email: "some updated email", name: "some updated name", num_of_pets: 43}
+  @create_attrs %{bio: "some bio", email: "some@email", name: "some name", num_of_pets: 42}
+  @update_attrs %{bio: "some updated bio", email: "some updated@email", name: "some updated name", num_of_pets: 43}
   @invalid_attrs %{bio: nil, email: nil, name: nil, num_of_pets: nil}
 
   def fixture(:user) do

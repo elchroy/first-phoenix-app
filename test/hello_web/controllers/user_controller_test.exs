@@ -1,88 +1,46 @@
 defmodule HelloWeb.UserControllerTest do
-  use HelloWeb.ConnCase
+    use HelloWeb.ConnCase
 
-  alias Hello.Users
+    alias Hello.Accounts
 
-  @create_attrs %{bio: "some bio", email: "some@email", name: "some name", num_of_pets: 42}
-  @update_attrs %{bio: "some updated bio", email: "some updated@email", name: "some updated name", num_of_pets: 43}
-  @invalid_attrs %{bio: nil, email: nil, name: nil, num_of_pets: nil}
+    test "index/2 responds with all Users", %{conn: conn} do
+        users = [
+            %{name: "John", email: "john@example.com", password: "john pass"},
+            %{name: "Jane", email: "jane@example.com", password: "jane pass"},
+        ]
 
-  def fixture(:user) do
-    {:ok, user} = Users.create_user(@create_attrs)
-    user
-  end
+        # create users local to this database connection and test
+        [{:ok, user1}, {:ok, user2}] = Enum.map(users, &Accounts.create_user(&1))
 
-  describe "index" do
-    test "lists all users", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :index))
-      assert html_response(conn, 200) =~ "Listing Users"
-    end
-  end
+        expected = %{
+            "data" => [
+                %{ "name" => user1.name, "email" => user1.email},
+                %{ "name" => user2.name, "email" => user2.email}
+            ]
+        }
 
-  describe "new user" do
-    test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :new))
-      assert html_response(conn, 200) =~ "New User"
-    end
-  end
+        response = conn
+        |> get(Routes.user_path(conn, :index))
+        |> json_response(200)
 
-  describe "create user" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.user_path(conn, :show, id)
-
-      conn = get(conn, Routes.user_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Show User"
+        assert response == expected
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New User"
-    end
-  end
-
-  describe "edit user" do
-    setup [:create_user]
-
-    test "renders form for editing chosen user", %{conn: conn, user: user} do
-      conn = get(conn, Routes.user_path(conn, :edit, user))
-      assert html_response(conn, 200) =~ "Edit User"
-    end
-  end
-
-  describe "update user" do
-    setup [:create_user]
-
-    test "redirects when data is valid", %{conn: conn, user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
-      assert redirected_to(conn) == Routes.user_path(conn, :show, user)
-
-      conn = get(conn, Routes.user_path(conn, :show, user))
-      assert html_response(conn, 200) =~ "some updated bio"
+    @tag :only
+    describe "create/2" do
+        test "Creates, and responds with a newly created user if attributes are valid"
+        test "Returnds an error and does not create a use if attributes are invalid"
     end
 
-    test "renders errors when data is invalid", %{conn: conn, user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit User"
+    describe "show/2" do
+        test "Responds with user info if the user is found"
+        test "Responds wtih a message indicating that the user is not found"
     end
-  end
 
-  describe "delete user" do
-    setup [:create_user]
-
-    test "deletes chosen user", %{conn: conn, user: user} do
-      conn = delete(conn, Routes.user_path(conn, :delete, user))
-      assert redirected_to(conn) == Routes.user_path(conn, :index)
-      assert_error_sent 404, fn ->
-        get(conn, Routes.user_path(conn, :show, user))
-      end
+    describe "update/2" do
+        test "Edits, and responds with the user if attributes are valid"
+        test "Returnds an error and does not edit the user if attributes are invalid"
     end
-  end
 
-  defp create_user(_) do
-    user = fixture(:user)
-    {:ok, user: user}
-  end
+    test "delete/2 and responds with :ok if the user was deleted"
 end

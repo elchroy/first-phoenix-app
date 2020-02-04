@@ -25,10 +25,21 @@ defmodule HelloWeb.UserControllerTest do
     end
 
 
-    # describe "create/2" do
-    #     test "Creates, and responds with a newly created user if attributes are valid"
-    #     test "Returnds an error and does not create a use if attributes are invalid"
-    # end
+    @tag :only
+    describe "create/2" do
+        test "Creates, and responds with a newly created user if attributes are valid", %{conn: conn} do
+            response = conn
+            |> post(Routes.user_path(conn, :create, user: @create_attrs))
+            |> json_response(201)
+
+            expected = %{
+                "data" => %{"email" => "john@example.com", "name" => "John"}
+            }
+
+            assert response == expected
+        end
+        test "Returnds an error and does not create a use if attributes are invalid"
+    end
 
     describe "show/2" do
 

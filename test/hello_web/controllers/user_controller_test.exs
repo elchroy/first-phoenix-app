@@ -79,10 +79,39 @@ defmodule HelloWeb.UserControllerTest do
         end
     end
 
-    # describe "update/2" do
-    #     test "Edits, and responds with the user if attributes are valid"
-    #     test "Returnds an error and does not edit the user if attributes are invalid"
-    # end
+    describe "update/2" do
+
+        setup [:create_user]
+        
+        test "Edits, and responds with the user if attributes are valid", %{conn: conn, user: user} do
+            user_update = %{:name => "updated name", :email => "updated@email.com"}
+            
+            response = conn
+            |> put(Routes.user_path(conn, :update, user), user: user_update)
+            |> json_response(200)            
+            
+            expected = %{
+                "data" => %{ "name" => "updated name", "email" => "updated@email.com" }
+            }
+            
+            assert response == expected
+        end
+        
+        test "Returns an error and does not edit the user if attributes are invalid", %{conn: conn, user: user} do
+            invalid_update = %{:name => "", :email => "invalid-at-email-dot-com"}
+            
+            response = conn
+            |> put(Routes.user_path(conn, :update, user), user: invalid_update)
+            |> json_response(400)            
+            
+            expected = %{
+                "error" => "invalid data",
+                "data" => %{ "name" => "", "email" => "invalid-at-email-dot-com" }
+            }
+            
+            assert response == expected
+        end
+    end
 
     # test "delete/2 and responds with :ok if the user was deleted"
 

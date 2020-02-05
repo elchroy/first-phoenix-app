@@ -46,14 +46,14 @@ defmodule Hello.Accounts do
     
     ## Examples
 
-      iex> show_user(234)
+      iex> get_user(234)
       {:ok, %User{}}
 
-      iex> show_user(-1)
+      iex> get_user(-1)
       nil
       
     """
-    def show_user(user_id) do 
+    def get_user(user_id) do 
         Repo.get(User, user_id)
     end
 
@@ -62,14 +62,33 @@ defmodule Hello.Accounts do
     
     ## Examples
 
-      iex> show_user!(user_id)
+      iex> get_user!(user_id)
       {:ok, %User{}}
 
-      iex> show_user!(user_id)
+      iex> get_user!(user_id)
       {:error, %Ecto.Changeset{}}
       
     """
-    def show_user!(user_id) do 
+    def get_user!(user_id) do 
         Repo.get(User, user_id)
+    end
+
+    @doc """
+    Updates an existing user
+
+    ## Examples
+        
+        iex> update_user(%User{}, %{field: value})
+        {:ok, %User{}}
+        
+        iex> update_user(%User{}, %{field: value})
+        {:error, %Ecto.Changeset{}}
+
+    """
+
+    def update_user(user, update_attrs) do
+      user
+      |> User.changeset(update_attrs)
+      |> Repo.update()
     end
 end

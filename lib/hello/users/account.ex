@@ -13,7 +13,7 @@ defmodule Hello.Accounts.User do
         user
         |> cast(attrs, [:name, :email])
         |> validate_required([:name, :email])
-        |> validate_length(:name, min: 2, max: 10)
+        |> validate_length(:name, min: 2, max: 50)
         |> validate_format(:email, ~r/@/)
     end
 end

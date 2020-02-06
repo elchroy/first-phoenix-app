@@ -30,10 +30,25 @@ defmodule HelloWeb.UserController do
         user = Accounts.get_user!(user_id)
 
         case Accounts.update_user(user, user_params) do
-            {:error, _} -> conn
+            { :error, changeset } -> conn
                 |> put_status(:bad_request)
-                |> json(%{ :error => "invalid data", :data => user_params })
+                |> render("error.json", changeset: changeset)
             { :ok, user } -> conn |> render("show.json", user: user)
+        end
+    end
+
+    def delete(conn, %{ "id" => user_id }) do
+
+        case Accounts.get_user!(user_id) do
+            nil -> conn
+                |> put_status(:not_found)
+                |> json(%{ data: %{ message: "Delete unsuccessful. User not found" } } )
+            user ->
+                case Accounts.delete_user(user) do
+                    { :ok, _struct } -> conn
+                        |> put_status(:ok)
+                        |> render("okay.json", message: "User successfully deleted")
+                end
         end
     end
 end

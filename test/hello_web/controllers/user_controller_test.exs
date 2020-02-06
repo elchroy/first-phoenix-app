@@ -105,15 +105,51 @@ defmodule HelloWeb.UserControllerTest do
             |> json_response(400)            
             
             expected = %{
-                "error" => "invalid data",
-                "data" => %{ "name" => "", "email" => "invalid-at-email-dot-com" }
+                "errors" => %{
+                    "email" => ["has invalid format"],
+                    "name" => ["can't be blank"]
+                }
+            }
+            
+            assert response == expected
+        end
+
+        # test "Returns an error and does not edit the user if the user is not available"
+    end
+
+    describe "delete/2" do
+        setup [:create_user]
+
+        @tag :only
+        test "responds with :ok if the user was deleted", %{conn: conn, user: user} do
+
+            response = conn
+            |> delete(Routes.user_path(conn, :delete, user.id))
+            |> json_response(200)
+
+            expected = %{
+                "data" => %{
+                    "message" => "User successfully deleted"
+                }
+            }
+
+            assert response == expected
+        end
+        
+        test "responds with :error message if the user to be deleted does not exist", %{conn: conn} do
+            response = conn
+            |> delete(Routes.user_path(conn, :delete, -11111))
+            |> json_response(404)
+            
+            expected = %{
+                "data" => %{
+                    "message" => "Delete unsuccessful. User not found"
+                }
             }
             
             assert response == expected
         end
     end
-
-    # test "delete/2 and responds with :ok if the user was deleted"
 
     defp create_user(_) do
         {:ok, user} = Accounts.create_user(@create_attrs)

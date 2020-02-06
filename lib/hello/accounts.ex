@@ -91,4 +91,21 @@ defmodule Hello.Accounts do
       |> User.changeset(update_attrs)
       |> Repo.update()
     end
+
+    @doc """
+    Deletes an existing user
+    returns an error is user does not exist
+
+    ## Examples
+    
+        iex> delete_user(%User{})
+        {:ok, struct}
+    
+        iex> delete_user(%User{})
+        {:error, Ecto.Changeset.t()}
+        
+    """
+    def delete_user(user) do
+      Repo.delete(user)
+    end
 end
